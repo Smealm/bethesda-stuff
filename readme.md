@@ -4,7 +4,7 @@ get [AHK](https://www.autohotkey.com/)
 & get [ViolentMonkey](https://violentmonkey.github.io/), after installing the extension get [this](https://greasyfork.org/en/scripts/452309-auto-slow-download-nexus-mods) and [this](https://greasyfork.org/en/scripts/483337-nexus-download-collection)
 then download AutoVortex from this Github repo
 
-start installing a collection of your choice and when prompted to download a mod simply use the AHK script to automatically click the download button for you **(Press F1 to start, when you're done press ESC to stop it)**, the page will automatically start downloading in vortex then close itself if you installed the violentmonkey userscript present in the instructions above. alternatively you can go to the "Mods" section of the collection page on the Nexus site and hit "download all mods" (thanks to the violentmonkey userscript present in the instructions above).
+start installing a collection of your choice and when prompted to download a mod simply use the AHK script to automatically click the download button for you **(Press F1 to start, when you're done press ESC to stop it)**, the page will automatically start downloading in vortex then close itself, if you installed the violentmonkey userscript present in the instructions above. alternatively you can go to the "Mods" section of the collection page on the Nexus site and hit "download all mods" (thanks to the violentmonkey userscript present in the instructions above).
 
 make sure the `download.png` file is present in the same directory as the AutoVortex file or else it wont work.
 
