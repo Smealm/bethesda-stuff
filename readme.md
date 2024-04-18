@@ -1,3 +1,12 @@
+this section is for automating Collection installs using Vortex Mod Manager
+
+get [AHK](https://www.autohotkey.com/)
+get [ViolentMonkey](https://violentmonkey.github.io/), after installing the extension get [this](https://greasyfork.org/en/scripts/452309-auto-slow-download-nexus-mods) and [this](https://greasyfork.org/en/scripts/483337-nexus-download-collection)
+then download AutoVortex from this Github repo
+
+
+---------------
+
 bethesda scripts or whatever i end up putting here
 
 in the SkyrimSE Folder, download run.bat and put it into `\steamapps\common\Skyrim Special Edition\`
