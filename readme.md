@@ -7,7 +7,7 @@ then download AutoVortex from this Github repo
 
 ---------------
 
-bethesda scripts or whatever i end up putting here
+this section is for bethesda scripts or whatever
 
 in the SkyrimSE Folder, download run.bat and put it into `\steamapps\common\Skyrim Special Edition\`
 open up steam and right click on skyrim, go to properties, launch options and put `run.bat %command%` into it.
