@@ -1,4 +1,4 @@
-this section is for automating Collection installs using Vortex Mod Manager
+this section is for automating Collection installs using Vortex Mod Manager, AutoHotKey(Client Based Automation) & ViolentMonkey(Browser Based Automation)
 
 get [AHK](https://www.autohotkey.com/)
 & get [ViolentMonkey](https://violentmonkey.github.io/), after installing the extension get [this](https://greasyfork.org/en/scripts/452309-auto-slow-download-nexus-mods) and [this](https://greasyfork.org/en/scripts/483337-nexus-download-collection)
