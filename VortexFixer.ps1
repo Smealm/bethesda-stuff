@@ -100,7 +100,7 @@ $ExcludedFiles = @(
     '_ResourcePack.bsa', '_ResourcePack.esl',
     'ccAFDSSE001-DweSanctuary.bsa', 'ccAFDSSE001-DweSanctuary.esm',
     'BGS_Logo.bik', 'VortexFixer.ps1',
-    'vortex.deployment.json'
+    'vortex.deployment.json', '__folder_managed_by_vortex'
 )
 
 # Loop through all files in the directory
