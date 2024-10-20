@@ -99,8 +99,8 @@ $ExcludedFiles = @(
     'Skyrim.esm', 'Update.esm',
     '_ResourcePack.bsa', '_ResourcePack.esl',
     'ccAFDSSE001-DweSanctuary.bsa', 'ccAFDSSE001-DweSanctuary.esm',
-	'BGS_Logo.bik', 'VortexFixer.ps1',
-	'vortex.deployment.json'
+    'BGS_Logo.bik', 'VortexFixer.ps1',
+    'vortex.deployment.json'
 )
 
 # Loop through all files in the directory
