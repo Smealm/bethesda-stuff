@@ -9,6 +9,7 @@ $ScriptName = [System.IO.Path]::GetFileName($MyInvocation.MyCommand.Path)
 
 # List of specific files to exclude from deletion
 $ExcludedFiles = @(
+    "run.bat"
     "Galaxy64.dll",
     "High.ini",
     "Low.ini",
