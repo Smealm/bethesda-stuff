@@ -1,6 +1,3 @@
-# Define the maximum number of files to process at a time
-$BatchSize = 10000
-
 # Get the current directory
 $CurrentDirectory = Get-Location
 
@@ -251,10 +248,18 @@ $files = Get-ChildItem -Recurse -File
 $totalFiles = $files.Count
 $processedFiles = 0
 
-try {
-    # Attempt to process files in parallel
-    $files | ForEach-Object -Parallel {
-        param ($file, $ExcludedFiles)
+# Set the maximum number of concurrent jobs
+$maxJobs = 100
+$jobs = @()  # Array to store job objects
+
+# Attempt to process files in parallel using background jobs
+foreach ($filePath in $files) {
+    # Start a job for each file processing
+    $jobs += Start-Job -ScriptBlock {
+        param ($filePath, $ExcludedFiles)
+
+        # Get the file info using the file path
+        $file = Get-Item -Path $filePath
 
         # Check if the file is excluded
         $isExcluded = $ExcludedFiles -contains $file.Name
@@ -267,16 +272,21 @@ try {
             Write-Host "Deleting file: $($file.FullName)"
             Remove-Item $file.FullName -Force
         }
-    } -ArgumentList $_, $ExcludedFiles -ThrottleLimit 10
-}
-catch {
-    # If an error occurs, check if it's related to the -Parallel parameter
-    if ($_.Exception.Message -like "*Parameter*Parallel*") {
-        Write-Host "Error: The '-Parallel' parameter is not supported in this version of PowerShell."
-        Write-Host "Please update to PowerShell 7 or later to use parallel processing."
-    }
-    else {
-        # For any other errors, just display the error message
-        Write-Host "An unexpected error occurred: $($_.Exception.Message)"
+    } -ArgumentList $filePath, $ExcludedFiles
+
+    # Check and wait for jobs if the limit is reached
+    while ($jobs.Count -ge $maxJobs) {
+        Start-Sleep -Seconds 1  # Wait before checking again
+        # Clean up completed jobs
+        $jobs = $jobs | Where-Object { $_.State -eq 'Running' }
     }
 }
+
+# Wait for all jobs to complete
+$jobs | Wait-Job
+
+# Retrieve job results (optional)
+$jobs | Receive-Job
+
+# Clean up jobs
+$jobs | Remove-Job
