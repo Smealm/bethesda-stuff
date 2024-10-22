@@ -246,6 +246,9 @@ $ExcludedFiles = @(
     "SkyrimPrefs.ini"
 )
 
+# Get all files in the current directory and its subdirectories
+$files = Get-ChildItem -Recurse -File
+
 # Process each file
 foreach ($file in $files) {
     # Check if the file is excluded
