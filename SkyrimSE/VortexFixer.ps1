@@ -246,16 +246,17 @@ $ExcludedFiles = @(
     "SkyrimPrefs.ini"
 )
 
-# Loop through all files in the directory
-Get-ChildItem -Path $CurrentDirectory -File -Recurse | Where-Object {
-    # Exclude files ending with 'vortex_backup'
-    $_.Name -notlike "*vortex_backup*" -and
-    # Exclude specified files
-    $ExcludedFiles -notcontains $_.Name -and
-    # Exclude hard links
-    $_.LinkType -ne 'HardLink'
-} | ForEach-Object -Process {
-    # Deleting files
-    Write-Host "Deleting file: $($_.FullName)"
-    Remove-Item -Path $_.FullName -Force
+# Process each file
+foreach ($file in $files) {
+    # Check if the file is excluded
+    $isExcluded = $ExcludedFiles -contains $file.Name
+    $isBackupFile = $file.Name -like '*vortex_backup*'
+    $isHardLink = $file.Attributes -band [System.IO.FileAttributes]::ReparsePoint
+    $isSymbolicLink = $file.Attributes -band [System.IO.FileAttributes]::SymbolicLink
+
+    # If the file is not excluded, not a backup, not a hard link, and not a symbolic link, delete it
+    if (-not $isExcluded -and -not $isBackupFile -and -not $isHardLink -and -not $isSymbolicLink) {
+        Write-Host "Deleting file: $($file.FullName)"
+        Remove-Item $file.FullName -Force
+	}
 }
