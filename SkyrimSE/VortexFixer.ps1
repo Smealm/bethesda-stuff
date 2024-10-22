@@ -248,18 +248,35 @@ $ExcludedFiles = @(
 
 # Get all files in the current directory and its subdirectories
 $files = Get-ChildItem -Recurse -File
+$totalFiles = $files.Count
+$processedFiles = 0
 
-# Process each file
-foreach ($file in $files) {
-    # Check if the file is excluded
-    $isExcluded = $ExcludedFiles -contains $file.Name
-    $isBackupFile = $file.Name -like '*vortex_backup*'
-    $isHardLink = $file.Attributes -band [System.IO.FileAttributes]::ReparsePoint
-    $isSymbolicLink = $file.Attributes -band [System.IO.FileAttributes]::SymbolicLink
+try {
+    # Attempt to process files in parallel
+    $files | ForEach-Object -Parallel {
+        param ($file, $ExcludedFiles)
 
-    # If the file is not excluded, not a backup, not a hard link, and not a symbolic link, delete it
-    if (-not $isExcluded -and -not $isBackupFile -and -not $isHardLink -and -not $isSymbolicLink) {
-        Write-Host "Deleting file: $($file.FullName)"
-        Remove-Item $file.FullName -Force
-	}
+        # Check if the file is excluded
+        $isExcluded = $ExcludedFiles -contains $file.Name
+        $isBackupFile = $file.Name -like '*vortex_backup*'
+        $isHardLink = $file.Attributes -band [System.IO.FileAttributes]::ReparsePoint
+        $isSymbolicLink = $file.Attributes -band [System.IO.FileAttributes]::SymbolicLink
+
+        # If the file is not excluded, not a backup, not a hard link, and not a symbolic link, delete it
+        if (-not $isExcluded -and -not $isBackupFile -and -not $isHardLink -and -not $isSymbolicLink) {
+            Write-Host "Deleting file: $($file.FullName)"
+            Remove-Item $file.FullName -Force
+        }
+    } -ArgumentList $_, $ExcludedFiles -ThrottleLimit 10
+}
+catch {
+    # If an error occurs, check if it's related to the -Parallel parameter
+    if ($_.Exception.Message -like "*Parameter*Parallel*") {
+        Write-Host "Error: The '-Parallel' parameter is not supported in this version of PowerShell."
+        Write-Host "Please update to PowerShell 7 or later to use parallel processing."
+    }
+    else {
+        # For any other errors, just display the error message
+        Write-Host "An unexpected error occurred: $($_.Exception.Message)"
+    }
 }
