@@ -248,45 +248,22 @@ $files = Get-ChildItem -Recurse -File
 $totalFiles = $files.Count
 $processedFiles = 0
 
-# Set the maximum number of concurrent jobs
-$maxJobs = 100
-$jobs = @()  # Array to store job objects
-
-# Attempt to process files in parallel using background jobs
 foreach ($filePath in $files) {
-    # Start a job for each file processing
-    $jobs += Start-Job -ScriptBlock {
-        param ($filePath, $ExcludedFiles)
+    # Get the file info using the file path
+    $file = Get-Item -Path $filePath
 
-        # Get the file info using the file path
-        $file = Get-Item -Path $filePath
+    # Check if the file is excluded, a backup, hard link, or symbolic link
+    $isExcluded = $ExcludedFiles -contains $file.Name
+    $isBackupFile = $file.Name -like '*vortex_backup*'
+    $isHardLink = $file.Attributes -band [System.IO.FileAttributes]::ReparsePoint
+    $isSymbolicLink = $file.Attributes -band [System.IO.FileAttributes]::SymbolicLink
 
-        # Check if the file is excluded
-        $isExcluded = $ExcludedFiles -contains $file.Name
-        $isBackupFile = $file.Name -like '*vortex_backup*'
-        $isHardLink = $file.Attributes -band [System.IO.FileAttributes]::ReparsePoint
-        $isSymbolicLink = $file.Attributes -band [System.IO.FileAttributes]::SymbolicLink
-
-        # If the file is not excluded, not a backup, not a hard link, and not a symbolic link, delete it
-        if (-not $isExcluded -and -not $isBackupFile -and -not $isHardLink -and -not $isSymbolicLink) {
-            Write-Host "Deleting file: $($file.FullName)"
-            Remove-Item $file.FullName -Force
-        }
-    } -ArgumentList $filePath, $ExcludedFiles
-
-    # Check and wait for jobs if the limit is reached
-    while ($jobs.Count -ge $maxJobs) {
-        Start-Sleep -Seconds 1  # Wait before checking again
-        # Clean up completed jobs
-        $jobs = $jobs | Where-Object { $_.State -eq 'Running' }
+    # If the file is not excluded, not a backup, not a hard link, and not a symbolic link, delete it
+    if (-not $isExcluded -and -not $isBackupFile -and -not $isHardLink -and -not $isSymbolicLink) {
+        Remove-Item $file.FullName -Force
     }
+
+    # Update the progress of processed files
+    $processedFiles++
+    Write-Progress -Activity "Deleting files" -Status "$processedFiles of $totalFiles files processed" -PercentComplete (($processedFiles / $totalFiles) * 100)
 }
-
-# Wait for all jobs to complete
-$jobs | Wait-Job
-
-# Retrieve job results (optional)
-$jobs | Receive-Job
-
-# Clean up jobs
-$jobs | Remove-Job
