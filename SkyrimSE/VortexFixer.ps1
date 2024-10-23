@@ -267,3 +267,5 @@ foreach ($filePath in $files) {
     $processedFiles++
     Write-Progress -Activity "Deleting files" -Status "$processedFiles of $totalFiles files processed" -PercentComplete (($processedFiles / $totalFiles) * 100)
 }
+
+Write-Host "Directories Cleaned."
