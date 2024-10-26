@@ -2,6 +2,12 @@
 $ReferenceFolder = Read-Host -Prompt "Enter the path to the folder with the reference files (e.g., FOLDER_TO_BE_SCANNED)"
 $TargetFolder = Read-Host -Prompt "Enter the path to the folder where files will be deleted (e.g., THE_OTHER_FOLDER)"
 
+# Check if the Reference Folder and Target Folder are the same
+if ($ReferenceFolder -eq $TargetFolder) {
+    Write-Output "Error: The Reference Folder and Target Folder are the same. Operation stopped to prevent accidental deletion."
+    exit
+}
+
 # Validate folder paths
 if (!(Test-Path -Path $ReferenceFolder -PathType Container)) {
     Write-Output "Reference folder path is invalid. Please check the path and try again."
