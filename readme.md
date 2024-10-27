@@ -23,3 +23,7 @@ it will delete any file that isn't a vortex backup file, vortex management indic
 
 ---------------
 'Duplicate Remover.ps1' searches two set directories, checks for conflicts between both and fixes them by removing the conflicting files from the target folder (the second folder specified) i made this to clean up my skyrim collection packages and put it here in case i might need it again later in case i end up accidentally deleting it.
+---------------
+'Armor Editor ID Cleaner for XEdit List Armor Data Script.ps1' is meant to be used with https://github.com/TES5Edit/xEditScripts/blob/master/Scripts/List%20Armor%20Data.pas
+Copy the output it gives you, paste it into a txt file, run the text file through the script and you get only the armors editor ID's.
+Makes creating https://www.nexusmods.com/skyrimspecialedition/mods/108665 restriction files WAYYY faster, especially if the female only armor mod you add has like 200 different variants of the same clothing item.
