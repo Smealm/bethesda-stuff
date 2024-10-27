@@ -36,6 +36,36 @@ function Convert-ConflictRules {
     # Add distinction line
     $output += "----------------------------------------------------------------------------`n`n"
 
+    # Get the name for the mods section header
+    $modName = $jsonObject.info.name
+
+    # Add header for mods section
+    $output += "The following mods are included in `"$modName`":`n`n"
+
+    # Check if the mods property exists
+    if ($jsonObject.mods) {
+        $modCount = 1  # Initialize a counter for numbering the mods
+        foreach ($mod in $jsonObject.mods) {
+            # Check if the mod has a name and output it
+            if ($mod.name) {
+                $output += "$modCount. $($mod.name)`n"  # Add mod name to output
+                $modCount++  # Increment the counter
+            }
+        }
+        $output += "`n"  # Add extra spacing after mods
+    } else {
+        Write-Host "No 'mods' section found in the JSON." -ForegroundColor Yellow
+    }
+
+    # Add distinction line for mod rules
+    $output += "----------------------------------------------------------------------------`n`n"
+
+    # Get the name for the mod rules section header
+    $rulesName = $jsonObject.info.name
+
+    # Add header for mod rules section
+    $output += "The following conflicts are resolved in `"$rulesName`":`n`n"
+
     # Check if the modRules property exists
     if (-not $jsonObject.modRules) {
         Write-Host "No 'modRules' found in the JSON. Exiting." -ForegroundColor Red
@@ -56,11 +86,11 @@ function Convert-ConflictRules {
             $referenceFile = $rule.reference.fileExpression
             $sourceFile = $rule.source.fileExpression
 
-            # Construct the output line based on the action
+            # Construct the output line with swapped references
             if ($action -eq "before") {
-                $outputLine = "Load `"$referenceFile`" before `"$sourceFile`""
+                $outputLine = "Load `"$sourceFile`" before `"$referenceFile`""
             } elseif ($action -eq "after") {
-                $outputLine = "Load `"$referenceFile`" after `"$sourceFile`""
+                $outputLine = "Load `"$sourceFile`" after `"$referenceFile`""
             }
 
             # Prepend the count number and format the output
@@ -83,10 +113,20 @@ if (Test-Path -Path $jsonFilePath) {
     # Call the function and get the result
     $result = Convert-ConflictRules -jsonFilePath $jsonFilePath
 
-    # Create the new file path with _LOAD-ORDER appended
+    # Create the new file path using the 'name' from 'info'
+    try {
+        # Extract the name for the output file from the JSON
+        $jsonInput = Get-Content -Path $jsonFilePath -Raw
+        $jsonObject = $jsonInput | ConvertFrom-Json
+        $outputFileName = $jsonObject.info.name  # Get the name for the filename
+    } catch {
+        Write-Host "Error retrieving the 'name' property from the JSON: $_" -ForegroundColor Red
+        return
+    }
+
+    # Create new filename with _LOAD-ORDER appended
     $directory = Split-Path -Path $jsonFilePath
-    $filenameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($jsonFilePath)
-    $newFileName = "${filenameWithoutExtension}_LOAD-ORDER.txt"  # Change extension to .txt
+    $newFileName = "${outputFileName}_LOAD-ORDER.txt"  # Change extension to .txt
     $newFilePath = Join-Path -Path $directory -ChildPath $newFileName
 
     # Write the result to the new TXT file
