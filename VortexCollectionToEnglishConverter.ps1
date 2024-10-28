@@ -22,6 +22,7 @@ function Convert-ConflictRules {
 
     # Initialize an array to store the output
     $output = @()
+    $log = @()  # Array to store invalid rules for logging
 
     # Check if the info property exists and format it
     if ($jsonObject.info) {
@@ -97,7 +98,17 @@ function Convert-ConflictRules {
             $output += "$count. $outputLine`n`n"  # Added spacing
             $count++  # Increment the counter
         } else {
-            Write-Host "Skipping invalid rule: $rule" -ForegroundColor Yellow
+            # Log the invalid rule
+            $log += "Invalid rule: $($rule | ConvertTo-Json -Depth 10)"  # Convert to JSON string for clarity
+        }
+    }
+
+    # Add LOG section if there are any invalid rules
+    if ($log.Count -gt 0) {
+        $output += "----------------------------------------------------------------------------`n`n"
+        $output += "LOG:`n`n"
+        foreach ($entry in $log) {
+            $output += "$entry`n`n"
         }
     }
 
@@ -107,6 +118,9 @@ function Convert-ConflictRules {
 
 # Prompt the user for the JSON file path
 $jsonFilePath = Read-Host -Prompt "Please enter the path to your JSON file"
+
+# Remove any quotes from the provided path
+$jsonFilePath = $jsonFilePath -replace '"', '' 
 
 # Check if the file exists
 if (Test-Path -Path $jsonFilePath) {
